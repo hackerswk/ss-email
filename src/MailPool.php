@@ -30,23 +30,23 @@ class MailPool
     /**
      * email to
      *
-     * @var String 
+     * @var Array 
      */
-    private $to;
+    private $to = array();
 
     /**
      * email cc
      *
      * @var Array
      */
-    private $cc;
+    private $cc = array();
     
     /**
      * email bcc
      *
      * @var Array
      */
-    private $bcc;
+    private $bcc = array();
 
     /**
      * email subject
@@ -67,7 +67,7 @@ class MailPool
      *
      * @var Array
      */
-    private $attachments;
+    private $attachments = array();
 
     /**
      * aws ses response status
@@ -109,7 +109,7 @@ class MailPool
      * 
      * @param $to
      */
-    public function setTo($to)
+    public function setTo(Array $to)
     {
         if (empty($to)) {
             throw new Exception ("email to is empty!");
@@ -122,7 +122,7 @@ class MailPool
      * 
      * @param $cc
      */
-    public function setCc($cc)
+    public function setCc(Array $cc)
     {
         if (empty($cc)) {
             throw new Exception ("email cc is empty!");
@@ -135,7 +135,7 @@ class MailPool
      * 
      * @param $bcc
      */
-    public function setBcc($bcc)
+    public function setBcc(Array $bcc)
     {
         if (empty($bcc)) {
             throw new Exception ("email bcc is empty!");
@@ -174,7 +174,7 @@ class MailPool
      * 
      * @param $attachments
      */
-    public function setAttachments($attachments)
+    public function setAttachments(Array $attachments)
     {
         if (empty($attachments)) {
             throw new Exception ("attachments is empty!");
