@@ -1,0 +1,20 @@
+{
+    "name": "stanleysie/ss-email",
+    "description": "Send email used servcie from AWS SES & AWS SNS.",
+    "type": "library",
+    "require": {
+        "php": "7.2^"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Stanleysie\\SsEmail\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Stanley Sie",
+            "email": "swookon@gmail.com"
+        }
+    ]
+}
