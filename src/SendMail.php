@@ -129,7 +129,7 @@ class SendMail
      * 
      * @param $cc
      */
-    public function setCc($cc)
+    public function setCc(Array $cc)
     {
         if (empty($cc)) {
             throw new Exception ("email cc is empty!");
@@ -142,7 +142,7 @@ class SendMail
      * 
      * @param $bcc
      */
-    public function setBcc($bcc)
+    public function setBcc(Array $bcc)
     {
         if (empty($bcc)) {
             throw new Exception ("email bcc is empty!");
@@ -194,7 +194,7 @@ class SendMail
      * 
      * @param $attachments
      */
-    public function setAttachments($attachments)
+    public function setAttachments(Array $attachments)
     {
         if (empty($attachments)) {
             throw new Exception ("attachments is empty!");
