@@ -450,7 +450,7 @@ class SendMail
     }
 
     /**
-     * create sender and bcc from recipients
+     * create recipient and bcc from recipients
      *
      * @return Array
      */
@@ -467,7 +467,7 @@ class SendMail
         $end = 50;
         for ($i=0; $i < $bcc_send_num; $i++) { 
             $bcc_array = array_slice($this->bcc, $star, $end);
-            $bcc_array['sender'] = $bcc_array[0];
+            $bcc_array['recipient'] = [$bcc_array[0]];
             $bcc_array['bcc'] = array_slice($bcc_array, 1);
             array_push($bcc_arrays, $bcc_array);
             $star += 50;
