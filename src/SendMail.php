@@ -97,6 +97,20 @@ class SendMail
      * @var String
      */
     private $region;
+
+    /**
+     * aws key
+     *
+     * @var String
+     */
+    private $key;
+    
+    /**
+     * aws secret
+     *
+     * @var String
+     */
+    private $secret;
     
     /**
      * set sender email
@@ -242,6 +256,32 @@ class SendMail
     }
 
     /**
+     * set aws key
+     * 
+     * @param $key
+     */
+    public function setKey($key)
+    {
+        if (empty($key)) {
+            throw new Exception ("key is empty!");
+        }   
+        $this->key = $key;
+    }
+
+    /**
+     * set aws secret
+     * 
+     * @param $secret
+     */
+    public function setSecret($secret)
+    {
+        if (empty($secret)) {
+            throw new Exception ("secret is empty!");
+        }   
+        $this->secret = $secret;
+    }
+
+    /**
      * get sender email
      */
     public function getSender()
@@ -330,14 +370,33 @@ class SendMail
     }
 
     /**
+     * get key
+     */
+    public function getKey()
+    {
+        return $this->key;
+    }
+
+    /**
+     * get secret
+     */
+    public function getSecret()
+    {
+        return $this->secret;
+    }
+
+    /**
      * initialize
      */
     public function __construct()
     {
         $this->SesClient = new SesClient([
-            'profile' => $this->profile,
             'version' => $this->version,
-            'region' => $this->region
+            'region' => $this->region,
+            'credentials' => [
+                'key' => $this->key,
+                'secret' => $this->secret,
+            ],
         ]);
     }
 

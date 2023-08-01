@@ -41,6 +41,20 @@ class Notification
      * @var String
      */
     private $region;
+
+    /**
+     * aws key
+     *
+     * @var String
+     */
+    private $key;
+    
+    /**
+     * aws secret
+     *
+     * @var String
+     */
+    private $secret;
     
     /**
      * set sns client profile
@@ -82,6 +96,32 @@ class Notification
     }
 
     /**
+     * set aws key
+     * 
+     * @param $key
+     */
+    public function setKey($key)
+    {
+        if (empty($key)) {
+            throw new Exception ("key is empty!");
+        }   
+        $this->key = $key;
+    }
+
+    /**
+     * set aws secret
+     * 
+     * @param $secret
+     */
+    public function setSecret($secret)
+    {
+        if (empty($secret)) {
+            throw new Exception ("secret is empty!");
+        }   
+        $this->secret = $secret;
+    }
+
+    /**
      * get sns profile
      */
     public function getProfile()
@@ -106,14 +146,33 @@ class Notification
     }
 
     /**
+     * get key
+     */
+    public function getKey()
+    {
+        return $this->key;
+    }
+
+    /**
+     * get secret
+     */
+    public function getSecret()
+    {
+        return $this->secret;
+    }
+
+    /**
      * initialize
      */
     public function __construct()
     {
         $this->SnsClient = new SnsClient([
-            'profile' => $this->profile,
             'version' => $this->version,
-            'region' => $this->region
+            'region' => $this->region,
+            'credentials' => [
+                'key' => $this->key,
+                'secret' => $this->secret,
+            ],
         ]);
     }
 
