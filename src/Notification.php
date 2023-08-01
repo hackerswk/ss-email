@@ -9,8 +9,8 @@
 
 namespace Stanleysie\SsEmail;
 
-use Aws\Sns\SnsClient; 
 use Aws\Exception\AwsException;
+use Aws\Sns\SnsClient;
 
 class Notification
 {
@@ -34,7 +34,7 @@ class Notification
      * @var String
      */
     private $version;
-    
+
     /**
      * sns client region
      *
@@ -48,76 +48,76 @@ class Notification
      * @var String
      */
     private $key;
-    
+
     /**
      * aws secret
      *
      * @var String
      */
     private $secret;
-    
+
     /**
      * set sns client profile
-     * 
+     *
      * @param $profile
      */
     public function setProfile($profile)
     {
         if (empty($profile)) {
-            throw new Exception ("profile is empty!");
-        }   
+            throw new Exception("profile is empty!");
+        }
         $this->profile = $profile;
     }
 
     /**
      * set sns client version
-     * 
+     *
      * @param $version
      */
     public function setVersion($version)
     {
         if (empty($version)) {
-            throw new Exception ("version is empty!");
-        }   
+            throw new Exception("version is empty!");
+        }
         $this->version = $version;
     }
 
     /**
      * set sns client region
-     * 
+     *
      * @param $region
      */
     public function setRegion($region)
     {
         if (empty($region)) {
-            throw new Exception ("region is empty!");
-        }   
+            throw new Exception("region is empty!");
+        }
         $this->region = $region;
     }
 
     /**
      * set aws key
-     * 
+     *
      * @param $key
      */
     public function setKey($key)
     {
         if (empty($key)) {
-            throw new Exception ("key is empty!");
-        }   
+            throw new Exception("key is empty!");
+        }
         $this->key = $key;
     }
 
     /**
      * set aws secret
-     * 
+     *
      * @param $secret
      */
     public function setSecret($secret)
     {
         if (empty($secret)) {
-            throw new Exception ("secret is empty!");
-        }   
+            throw new Exception("secret is empty!");
+        }
         $this->secret = $secret;
     }
 
@@ -182,12 +182,12 @@ class Notification
      * @param
      * @return Array
      */
-    public function setSubscribe($topic);
+    public function setSubscribe($topic)
     {
         $protocol = 'https';
         $endpoint = 'https://';
         //$topic = 'arn:aws:sns:us-east-1:111122223333:MyTopic';
-        
+
         try {
             $result = $this->SnSclient->subscribe([
                 'Protocol' => $protocol,
@@ -198,9 +198,9 @@ class Notification
             //var_dump($result);
         } catch (AwsException $e) {
             // output error message if fails
-            throw new Exception ($e->getMessage());
-        } 
-        
+            throw new Exception($e->getMessage());
+        }
+
         return json_decode($result, true);
     }
 
@@ -215,11 +215,11 @@ class Notification
             $json = file_get_contents('php://input');
             $data = json_decode($json, true);
             if (!is_array($data)) {
-                throw new Exception ("Data is not array!");
+                throw new Exception("Data is not array!");
             }
-            
+
         } catch (AwsException $e) {
-            throw new Exception ($e->getMessage());
+            throw new Exception($e->getMessage());
         }
 
         return $data;
@@ -231,7 +231,7 @@ class Notification
      * @param
      * @return Array
      */
-    public function getTopicAttr($topic);
+    public function getTopicAttr($topic)
     {
         try {
             $result = $this->SnSclient->getTopicAttributes([
@@ -240,10 +240,33 @@ class Notification
             //var_dump($result);
         } catch (AwsException $e) {
             // output error message if fails
-            throw new Exception ($e->getMessage());
-        } 
-        
+            throw new Exception($e->getMessage());
+        }
+
         return $result;
     }
 
+    /**
+     * confirm subscription use aws sns
+     *
+     * @param
+     * @return Array
+     */
+    public function confirmSubscription()
+    {
+        $subscription_token = 'arn:aws:sns:us-east-1:111122223333:MyTopic:123456-abcd-12ab-1234-12ba3dc1234a';
+        $topic = 'arn:aws:sns:us-east-1:111122223333:MyTopic';
+
+        try {
+            $result = $SnSclient->confirmSubscription([
+                'Token' => $subscription_token,
+                'TopicArn' => $topic,
+            ]);
+            var_dump($result);
+        } catch (AwsException $e) {
+            // output error message if fails
+            error_log($e->getMessage());
+        }
+
+    }
 }
