@@ -3,7 +3,8 @@
     "description": "Send email used servcie from AWS SES & AWS SNS.",
     "type": "library",
     "require": {
-        "php": "7.2^"
+        "php": "^7.2",
+        "aws/aws-sdk-php": "^3.277"
     },
     "license": "MIT",
     "autoload": {
