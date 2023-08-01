@@ -21,76 +21,12 @@ class MailBlock
     private $database;
 
     /**
-     * email
-     *
-     * @var String
-     */
-    private $email;
-
-    /**
-     * block reason
-     *
-     * @var String
-     */
-    private $block_reason;
-
-    /**
-     * initialize
-     */
-    public function __construct($database)
-    {
-        $this->database = $database; 
-    }
-
-    /**
-     * set email
-     * 
-     * @param $email
-     */
-    public function setEmail($email)
-    {
-        if (empty($email)) {
-            throw new Exception ("email is empty!");
-        }
-        $this->email = $email;
-    }
-
-    /**
-     * set block reason
-     * 
-     * @param $block_reason
-     */
-    public function setBlockReason($block_reason)
-    {
-        if (empty($block_reason)) {
-            throw new Exception ("block reason is empty!");
-        }
-        $this->block_reason = $block_reason;
-    }
-   
-    /**
-     * get email
-     */
-    public function getEmail()
-    {
-        return $this->email;
-    }
-    
-    /**
-     * get block reason
-     */
-    public function getBlockReason()
-    {
-        return $this->block_reason;
-    }
-
-    /**
      * set mail block
      * 
      * @param $email
      * @return Bool
      */
-    public function setMailBlock($email)
+    public function setMailBlock($email, $block_reason)
     {
         try {
             if (!isset($email) && empty($email)) {
