@@ -213,7 +213,7 @@ class Notification
     {
         try {
             $json = file_get_contents('php://input');
-            $data = json_decode($json, true);
+            $data = json_decode($json, JSON_PRETTY_PRINT);
             if (!is_array($data)) {
                 throw new Exception("Data is not array!");
             }
@@ -258,7 +258,7 @@ class Notification
         //$topic = 'arn:aws:sns:us-east-1:111122223333:MyTopic';
 
         try {
-            $result = $SnSclient->confirmSubscription([
+            $result = $this->SnSclient->confirmSubscription([
                 'Token' => $subscription_token,
                 'TopicArn' => $topic,
             ]);
