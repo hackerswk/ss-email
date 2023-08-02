@@ -243,7 +243,7 @@ class Notification
             throw new Exception($e->getMessage());
         }
 
-        return $result;
+        return json_decode($result, true);
     }
 
     /**
@@ -252,21 +252,22 @@ class Notification
      * @param
      * @return Array
      */
-    public function confirmSubscription()
+    public function confirmSubscription($subscription_token, $topic)
     {
-        $subscription_token = 'arn:aws:sns:us-east-1:111122223333:MyTopic:123456-abcd-12ab-1234-12ba3dc1234a';
-        $topic = 'arn:aws:sns:us-east-1:111122223333:MyTopic';
+        //$subscription_token = 'arn:aws:sns:us-east-1:111122223333:MyTopic:123456-abcd-12ab-1234-12ba3dc1234a';
+        //$topic = 'arn:aws:sns:us-east-1:111122223333:MyTopic';
 
         try {
             $result = $SnSclient->confirmSubscription([
                 'Token' => $subscription_token,
                 'TopicArn' => $topic,
             ]);
-            var_dump($result);
+            //var_dump($result);
         } catch (AwsException $e) {
             // output error message if fails
-            error_log($e->getMessage());
+            throw new Exception($e->getMessage());
         }
-
+        
+        return json_decode($result, true);
     }
 }
