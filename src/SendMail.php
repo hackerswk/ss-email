@@ -494,11 +494,14 @@ class SendMail
         $_attachment = [];
         $_attachments = [];
         foreach($this->getAttachments as $attachment) {
-            $file_path_array = explode("/", $attachment);
-            $file = end($file_path_array);
-            if (!is_file($file)) {
+            if (!file_exists($attachment)) {
+                throw new Exception ("file is not exist!");
+            }
+            if (!is_file($attachment)) {
                 throw new Exception ("it is not file!");
             }
+            $file_path_array = explode("/", $attachment);
+            $file = end($file_path_array);
             $_attachment['Filename'] = $file;
             $_attachment['Content'] = base64_encode(file_get_contents($file));
             $_attachment['ContentType'] = mime_content_type($file);
