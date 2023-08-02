@@ -105,7 +105,7 @@ class MailPool
             if ($quota < 24000) {
                 // 若寄送限制未超標, 每次最多回傳50個待處理批次
                 $sql = 'SELECT * FROM emailing_pool ';
-                $sql .= 'WHERE id > :id AND status = null LIMIT 50';
+                $sql .= 'WHERE id > :id AND status IS NULL';
                 $query = $this->database->prepare($sql);
                 $query->execute([
                     ':id' => 0,
