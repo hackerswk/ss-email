@@ -21,6 +21,14 @@ class MailPool
     private $database;
 
     /**
+     * initialize
+     */
+    public function __construct($db)
+    {
+        $this->database = $db;
+    }
+
+    /**
      * set mail pool
      * 
      * @param $subject
