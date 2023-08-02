@@ -32,7 +32,7 @@ class MailPool
      * @param $attachments
      * @return Bool
      */
-    public function setMailPool($subject, $body, array $to, $from, array $cc = null, array $bcc = null, array $attachments = null)
+    public function setMailPool($subject, $body, array $_to, $_from, array $cc = null, array $bcc = null, array $attachments = null)
     {
         try {
             if (!isset($subject) && empty($subject)) {
