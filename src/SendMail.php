@@ -508,31 +508,4 @@ class SendMail
         return $_attachments;
     }
 
-    /**
-     * create recipient and bcc from recipients
-     *
-     * @return Array
-     */
-    public function createSenderAndBcc()
-    {
-        $bcc_send_num = intval(count($this->bcc) / 50);
-        if (count($this->bcc) % 50 > 0) {
-            $bcc_send_num += 1;
-        }
-
-        $bcc_array = [];
-        $bcc_arrays = [];
-        $star = 0;
-        $end = 50;
-        for ($i=0; $i < $bcc_send_num; $i++) { 
-            $bcc_array = array_slice($this->bcc, $star, $end);
-            $bcc_array['recipient'] = [$bcc_array[0]];
-            $bcc_array['bcc'] = array_slice($bcc_array, 1);
-            array_push($bcc_arrays, $bcc_array);
-            $star += 50;
-            $end += 50;
-        }
-
-        return $bcc_arrays;
-    }
 }
