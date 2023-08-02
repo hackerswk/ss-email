@@ -100,7 +100,7 @@ class MailPool
             $query->execute([
                 ':date' => date('Y-m-d'),
             ]);
-            $b = $query->fetch(PDO::FETCH_ASSOC);
+            $b = $query->fetch(\PDO::FETCH_ASSOC);
             $quota = $b['batch'] * 30;
             if ($quota < 24000) {
                 // 若寄送限制未超標, 每次最多回傳50個待處理批次
@@ -110,7 +110,7 @@ class MailPool
                 $query->execute([
                     ':id' => 0,
                 ]);
-                $rows = $query->fetchAll(PDO::FETCH_ASSOC);
+                $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
                 foreach ($rows as $row) {
                     $row['_to'] = json_decode($row['_to'], JSON_PRETTY_PRINT);
                     $row['cc'] = json_decode($row['cc'], JSON_PRETTY_PRINT);
