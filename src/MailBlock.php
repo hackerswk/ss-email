@@ -53,7 +53,7 @@ class MailBlock
                 ':block_reason' => $block_reason
             ]);
 
-            if ($query->rowCount() === 0 || !$this->database->lastInsertId()) {
+            if ($query->rowCount() === 0) {
                 return false;
             }
 
