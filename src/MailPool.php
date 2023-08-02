@@ -91,7 +91,7 @@ class MailPool
      */
     public function getMailPool()
     {
-        $returnData = new stdClass();
+        $returnData = new \stdClass();
         $sendBatches = [];
         try {
             // 檢查每日寄送限制是否超標 (24000 封/天)
