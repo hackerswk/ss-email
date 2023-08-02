@@ -23,7 +23,7 @@ class MailPool
     /**
      * initialize
      */
-    public function __construct($db)
+    public function __construct($db = null)
     {
         $this->database = $db;
     }
