@@ -166,4 +166,29 @@ class MailPool
         return true;
     }
 
+    /**
+     * create recipient and bcc from recipients
+     *
+     * @return Array
+     */
+    public function createToAndBcc($recipients)
+    {
+        $bcc_send_num = intval(ceil(count($recipients) / 50));
+
+        $bcc_array = [];
+        $bcc_arrays = [];
+        $star = 0;
+        $end = 50;
+        for ($i=0; $i < $bcc_send_num; $i++) { 
+            $bcc_array = array_slice($recipients, $star, $end);
+            $bcc_array['to'] = [$bcc_array[0]];
+            $bcc_array['bcc'] = array_slice($bcc_array, 1);
+            array_push($bcc_arrays, $bcc_array);
+            $star += 50;
+            $end += 50;
+        }
+
+        return $bcc_arrays;
+    }
+
 }
