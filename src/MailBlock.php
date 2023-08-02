@@ -21,6 +21,14 @@ class MailBlock
     private $database;
 
     /**
+     * initialize
+     */
+    public function __construct($db = null)
+    {
+        $this->database = $db;
+    }
+
+    /**
      * set mail block
      * 
      * @param $email
