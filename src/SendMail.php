@@ -390,11 +390,7 @@ class SendMail
      */
     public function __construct()
     {
-        $this->SesClient = new SesClient([
-            'profile' => $this->profile,
-            'version' => $this->version,
-            'region' => $this->region
-        ]);
+        
     }
 
     /**
@@ -417,7 +413,12 @@ class SendMail
         $char_set = 'UTF-8';
 
         try {
-            $result = $this->SesClient->sendEmail([
+            $SesClient = new SesClient([
+                'profile' => $this->profile,
+                'version' => $this->version,
+                'region' => $this->region
+            ]);
+            $result = $SesClient->sendEmail([
                 'Destination' => [
                     'ToAddresses' => $this->recipient_emails,
                     'CcAddresses' => $this->cc,
@@ -468,7 +469,12 @@ class SendMail
     public function checkSendQuota()
     {
         try {
-            $result = $this->SesClient->getSendQuota([]);
+            $SesClient = new SesClient([
+                'profile' => $this->profile,
+                'version' => $this->version,
+                'region' => $this->region
+            ]);
+            $result = $SesClient->getSendQuota([]);
             $send_limit = $result["Max24HourSend"];
             $sent = $result["SentLast24Hours"];
             $available = $send_limit - $sent;
