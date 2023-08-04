@@ -391,12 +391,9 @@ class SendMail
     public function __construct()
     {
         $this->SesClient = new SesClient([
+            'profile' => $this->profile,
             'version' => $this->version,
-            'region' => $this->region,
-            'credentials' => [
-                'key' => $this->key,
-                'secret' => $this->secret,
-            ],
+            'region' => $this->region
         ]);
     }
 

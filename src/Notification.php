@@ -167,12 +167,9 @@ class Notification
     public function __construct()
     {
         $this->SnsClient = new SnsClient([
+            'profile' => $this->profile,
             'version' => $this->version,
-            'region' => $this->region,
-            'credentials' => [
-                'key' => $this->key,
-                'secret' => $this->secret,
-            ],
+            'region' => $this->region
         ]);
     }
 
