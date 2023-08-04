@@ -347,7 +347,7 @@ class SendMail
         $emailParams = [
             'Source' => $this->sender_email, // 寄件者電子郵件地址
             'Destination' => [
-                'ToAddresses' => [$this->recipient_emails],
+                'ToAddresses' => $this->recipient_emails,
                 'CcAddresses' => $this->cc,
                 'BccAddresses' => $this->bcc
             ],
@@ -392,7 +392,7 @@ class SendMail
         $headers = [
             'MIME-Version' => '1.0',
             'From' => $from,
-            'To' => $to,
+            'To' => $to[0],
             'Cc' => implode(', ', $cc),
             'Bcc' => implode(', ', $bcc),
             'Subject' => $subject,
