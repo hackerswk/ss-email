@@ -11,6 +11,7 @@ namespace Stanleysie\SsEmail;
 
 use Aws\Exception\AwsException;
 use Aws\Sns\SnsClient;
+use \Exception as Exception;
 
 class Notification
 {
@@ -166,11 +167,7 @@ class Notification
      */
     public function __construct()
     {
-        $this->SnsClient = new SnsClient([
-            'profile' => $this->profile,
-            'version' => $this->version,
-            'region' => $this->region
-        ]);
+        
     }
 
     /**
@@ -186,7 +183,12 @@ class Notification
         //$topic = 'arn:aws:sns:us-east-1:111122223333:MyTopic';
 
         try {
-            $result = $this->SnSclient->subscribe([
+            $SnsClient = new SnsClient([
+                'profile' => $this->profile,
+                'version' => $this->version,
+                'region' => $this->region
+            ]);
+            $result = $SnSclient->subscribe([
                 'Protocol' => $protocol,
                 'Endpoint' => $endpoint,
                 'ReturnSubscriptionArn' => true,
@@ -195,7 +197,7 @@ class Notification
             //var_dump($result);
         } catch (AwsException $e) {
             // output error message if fails
-            throw new Exception($e->getMessage());
+            throw new AwsException($e->getMessage());
         }
 
         return json_decode($result, true);
@@ -216,7 +218,7 @@ class Notification
             }
 
         } catch (AwsException $e) {
-            throw new Exception($e->getMessage());
+            throw new AwsException($e->getMessage());
         }
 
         return $data;
@@ -231,13 +233,18 @@ class Notification
     public function getTopicAttr($topic)
     {
         try {
-            $result = $this->SnSclient->getTopicAttributes([
+            $SnsClient = new SnsClient([
+                'profile' => $this->profile,
+                'version' => $this->version,
+                'region' => $this->region
+            ]);
+            $result = $SnSclient->getTopicAttributes([
                 'TopicArn' => $topic,
             ]);
             //var_dump($result);
         } catch (AwsException $e) {
             // output error message if fails
-            throw new Exception($e->getMessage());
+            throw new AwsException($e->getMessage());
         }
 
         return json_decode($result, true);
@@ -255,14 +262,19 @@ class Notification
         //$topic = 'arn:aws:sns:us-east-1:111122223333:MyTopic';
 
         try {
-            $result = $this->SnSclient->confirmSubscription([
+            $this->SnsClient = new SnsClient([
+                'profile' => $this->profile,
+                'version' => $this->version,
+                'region' => $this->region
+            ]);
+            $result = $SnSclient->confirmSubscription([
                 'Token' => $subscription_token,
                 'TopicArn' => $topic,
             ]);
             //var_dump($result);
         } catch (AwsException $e) {
             // output error message if fails
-            throw new Exception($e->getMessage());
+            throw new AwsException($e->getMessage());
         }
         
         return json_decode($result, true);

@@ -11,6 +11,7 @@ namespace Stanleysie\SsEmail;
 
 use Aws\Ses\SesClient;
 use Aws\Exception\AwsException;
+use \Exception as Exception;
 
 class SendMail
 {
@@ -448,7 +449,7 @@ class SendMail
                 $messageId = $result['MessageId'];
             }
         } catch (AwsException $e) {
-            throw new Exception ($e->getMessage());
+            throw new AwsException ($e->getMessage());
         }
 
         return $messageId;
@@ -474,7 +475,7 @@ class SendMail
             //print("<p>You can send " . $available . " more messages in the next 24 hours.</p>");
             //var_dump($result);
         } catch (AwsException $e) {
-            throw new Exception ($e->getMessage());
+            throw new AwsException ($e->getMessage());
         }
 
         return $available;
