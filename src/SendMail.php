@@ -512,7 +512,7 @@ class SendMail
             //$file_path_array = explode("/", $attachment);
             //$file = end($file_path_array);
             $file = $attachment;
-            $_attachment['FileName'] = $file;
+            $_attachment['FileName'] = basename($file);
             $_attachment['Data'] = base64_encode(file_get_contents($file));
             //$_attachment['ContentType'] = mime_content_type($file);
             array_push($_attachments, $_attachment);
