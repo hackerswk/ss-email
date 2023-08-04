@@ -93,20 +93,6 @@ class SendMail
     private $region;
 
     /**
-     * aws key
-     *
-     * @var String
-     */
-    private $key;
-    
-    /**
-     * aws secret
-     *
-     * @var String
-     */
-    private $secret;
-    
-    /**
      * set sender email
      * 
      * @param $sender_email
@@ -250,32 +236,6 @@ class SendMail
     }
 
     /**
-     * set aws key
-     * 
-     * @param $key
-     */
-    public function setKey($key)
-    {
-        if (empty($key)) {
-            throw new Exception ("key is empty!");
-        }   
-        $this->key = $key;
-    }
-
-    /**
-     * set aws secret
-     * 
-     * @param $secret
-     */
-    public function setSecret($secret)
-    {
-        if (empty($secret)) {
-            throw new Exception ("secret is empty!");
-        }   
-        $this->secret = $secret;
-    }
-
-    /**
      * get sender email
      */
     public function getSender()
@@ -364,22 +324,6 @@ class SendMail
     }
 
     /**
-     * get key
-     */
-    public function getKey()
-    {
-        return $this->key;
-    }
-
-    /**
-     * get secret
-     */
-    public function getSecret()
-    {
-        return $this->secret;
-    }
-
-    /**
      * initialize
      */
     public function __construct()
@@ -394,68 +338,42 @@ class SendMail
      */
     public function sendEmail()
     {
-        /*
-        $sender_email = 'sender@example.com';
-        $recipient_emails = ['recipient_1@example.com', 'recipient_2@example.com'];
-        $configuration_set = 'ConfigSet';
-        $subject = 'Test Email';
-        $plaintext_body = 'The email was sent with Amazon SES using the AWS SDK for PHP.';
-        $html_body = '<h1>Amazon Simple Email Service Test Email</h1>';
-        */
+        $SesClient = new SesClient([
+            'profile' => $this->profile,
+            'version' => $this->version,
+            'region' => $this->region
+        ]);
+        
+        $emailParams = [
+            'Source' => $this->sender_email, // 寄件者電子郵件地址
+            'Destination' => [
+                'ToAddresses' => $this->recipient_emails,
+                'CcAddresses' => $this->cc,
+                'BccAddresses' => $this->bcc
+            ],
+        ];
 
-        $char_set = 'UTF-8';
         if (!empty($this->html_body)) {
-            $message = [
-                'Body' => [
-                    'Html' => [
-                        'Charset' => $char_set,
-                        'Data' => $this->html_body
-                    ]
-                ],
-                'Subject' => [
-                    'Charset' => $char_set,
-                    'Data' => $this->subject
-                ],
-                'Attachments' => !empty($this->attachments) ? $this->createAttachments() : ""
-            ];
+            $body = $this->html_body;
+            $ctype = 'html';
         }
 
         if (!empty($this->plaintext_body)) {
-            $message = [
-                'Body' => [
-                    'Text' => [
-                        'Charset' => $char_set,
-                        'Data' => $this->plaintext_body
-                    ]
-                ],
-                'Subject' => [
-                    'Charset' => $char_set,
-                    'Data' => $this->subject
-                ],
-                'Attachments' => !empty($this->attachments) ? $this->createAttachments() : ""
-            ];
+            $body = $this->plaintext_body;
+            $ctype = 'plain';
         }
 
         try {
-            $SesClient = new SesClient([
-                'profile' => $this->profile,
-                'version' => $this->version,
-                'region' => $this->region
-            ]);
-            $result = $SesClient->sendEmail([
-                'Destination' => [
-                    'ToAddresses' => $this->recipient_emails,
-                    'CcAddresses' => $this->cc,
-                    'BccAddresses' => $this->bcc
-                ],
-                'ReplyToAddresses' => [$this->sender_email],
-                'Source' => $this->sender_email,
-                'Message' => $message
+            $subject = $this->subject;
+            $attachments = !empty($this->attachments) ? $this->createAttachments() : ""; 
+            $messageData = $this->createMimeMessage($this->sender_email, $this->recipient_emails, $subject, $body, $ctype, $this->cc, $this->bcc, $attachments);
 
-                // And if you aren't using a configuration set, comment or delete the
-                // following line
-                //'ConfigurationSetName' => $configuration_set,
-            ]);
+            $emailParams['RawMessage'] = [
+                'Data' => $messageData
+            ];
+
+            // 寄送郵件
+            $result = $SesClient->sendRawEmail($emailParams);
             $messageId = "";
             if (!empty($result['MessageId'])) {
                 $messageId = $result['MessageId'];
@@ -465,6 +383,49 @@ class SendMail
         }
 
         return $messageId;
+    }
+
+    public function createMimeMessage($from, $to, $subject, $body, $ctype, Array $cc = null, Array $bcc = null, Array $attachments = null)
+    {
+        $boundary = uniqid('np');
+
+        $headers = [
+            'MIME-Version' => '1.0',
+            'From' => $from,
+            'To' => $to,
+            'Cc' => implode(', ', $cc),
+            'Bcc' => implode(', ', $bcc),
+            'Subject' => $subject,
+            'Content-Type' => 'multipart/mixed; boundary=' . $boundary
+        ];
+
+        $message = '';
+        foreach ($headers as $key => $value) {
+            $message .= "{$key}: {$value}\r\n";
+        }
+
+        $message .= "\r\n";
+        $message .= "--{$boundary}\r\n";
+        $message .= "Content-Type: text/". $ctype . "; charset=UTF-8\r\n";
+        $message .= "Content-Transfer-Encoding: 7bit\r\n";
+        $message .= "\r\n";
+        $message .= $body;
+        $message .= "\r\n";
+
+        if ($attachments) {
+            foreach ($attachments as $attachment) {
+                $message .= "--{$boundary}\r\n";
+                $message .= "Content-Type: application/pdf\r\n";
+                $message .= "Content-Disposition: attachment; filename=\"{$attachment['FileName']}\"\r\n";
+                $message .= "Content-Transfer-Encoding: base64\r\n";
+                $message .= "\r\n";
+                $message .= chunk_split(base64_encode($attachment['Data']));
+                $message .= "\r\n";
+                $message .= "--{$boundary}--";
+            }
+        }
+
+        return $message;
     }
 
     /**
@@ -506,15 +467,14 @@ class SendMail
             if (!file_exists($attachment)) {
                 throw new Exception ("file is not exist!");
             }
+
             if (!is_file($attachment)) {
                 throw new Exception ("it is not file!");
             }
-            //$file_path_array = explode("/", $attachment);
-            //$file = end($file_path_array);
-            $file = $attachment;
-            $_attachment['FileName'] = basename($file);
-            $_attachment['Data'] = base64_encode(file_get_contents($file));
-            //$_attachment['ContentType'] = mime_content_type($file);
+
+            $_attachment['FileName'] = basename($attachment);
+            $_attachment['Data'] = file_get_contents($attachment);
+            //$_attachment['ContentType'] = mime_content_type($attachment);
             array_push($_attachments, $_attachment);
         }
 
