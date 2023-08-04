@@ -497,8 +497,9 @@ class SendMail
             if (!is_file($attachment)) {
                 throw new Exception ("it is not file!");
             }
-            $file_path_array = explode("/", $attachment);
-            $file = end($file_path_array);
+            //$file_path_array = explode("/", $attachment);
+            //$file = end($file_path_array);
+            $file = $attachment;
             $_attachment['Filename'] = $file;
             $_attachment['Content'] = base64_encode(file_get_contents($file));
             $_attachment['ContentType'] = mime_content_type($file);
