@@ -421,8 +421,8 @@ class SendMail
                 $message .= "\r\n";
                 $message .= chunk_split(base64_encode($attachment['Data']));
                 $message .= "\r\n";
-                $message .= "--{$boundary}--";
             }
+            $message .= "--{$boundary}--";
         }
 
         return $message;
