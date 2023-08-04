@@ -489,7 +489,7 @@ class SendMail
     {
         $_attachment = [];
         $_attachments = [];
-        foreach($this->getAttachments as $attachment) {
+        foreach($this->attachments as $attachment) {
             if (!file_exists($attachment)) {
                 throw new Exception ("file is not exist!");
             }
