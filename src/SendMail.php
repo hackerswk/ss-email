@@ -347,7 +347,7 @@ class SendMail
         $emailParams = [
             'Source' => $this->sender_email, // 寄件者電子郵件地址
             'Destination' => [
-                'ToAddresses' => $this->recipient_emails,
+                'ToAddresses' => [$this->recipient_emails],
                 'CcAddresses' => $this->cc,
                 'BccAddresses' => $this->bcc
             ],
