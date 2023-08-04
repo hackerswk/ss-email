@@ -405,6 +405,35 @@ class SendMail
         */
 
         $char_set = 'UTF-8';
+        if (!empty($this->html_body)) {
+            $message = [
+                'Body' => [
+                    'Html' => [
+                        'Charset' => $char_set,
+                        'Data' => $this->html_body
+                    ]
+                ],
+                'Subject' => [
+                    'Charset' => $char_set,
+                    'Data' => $this->subject
+                ]
+            ];
+        }
+
+        if (!empty($this->plaintext_body)) {
+            $message = [
+                'Body' => [
+                    'Text' => [
+                        'Charset' => $char_set,
+                        'Data' => $this->plaintext_body
+                    ]
+                ],
+                'Subject' => [
+                    'Charset' => $char_set,
+                    'Data' => $this->subject
+                ]
+            ];
+        }
 
         try {
             $SesClient = new SesClient([
@@ -416,29 +445,12 @@ class SendMail
                 'Destination' => [
                     'ToAddresses' => $this->recipient_emails,
                     'CcAddresses' => $this->cc,
-                    'BccAddresses' => $this->bcc,
+                    'BccAddresses' => $this->bcc
                 ],
                 'ReplyToAddresses' => [$this->sender_email],
                 'Source' => $this->sender_email,
-                'Message' => [
-                    'Body' => [
-                        'Html' => [
-                            'Charset' => $char_set,
-                            'Data' => $this->html_body,
-                        ],
-                        /*
-                        'Text' => [
-                            'Charset' => $char_set,
-                            'Data' => $plaintext_body,
-                        ],
-                        */
-                    ],
-                    'Subject' => [
-                        'Charset' => $char_set,
-                        'Data' => $this->subject,
-                    ],
-                ],
-                'Attachments' => !empty($this->attachments) ? $this->createAttachments() : "",
+                'Message' => $message,
+                'Attachments' => !empty($this->attachments) ? $this->createAttachments() : ""
 
                 // And if you aren't using a configuration set, comment or delete the
                 // following line
