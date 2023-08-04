@@ -115,6 +115,7 @@ class MailPool
                     $row['_to'] = json_decode($row['_to'], JSON_PRETTY_PRINT);
                     $row['cc'] = json_decode($row['cc'], JSON_PRETTY_PRINT);
                     $row['bcc'] = json_decode($row['bcc'], JSON_PRETTY_PRINT);
+                    $row['attachments'] = json_decode($row['attachments'], JSON_PRETTY_PRINT);
                     array_push($sendBatches, $row);
                 }
             }

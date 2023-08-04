@@ -15,13 +15,6 @@ use Aws\Exception\AwsException;
 class SendMail
 {
     /**
-     * aws ses object
-     *
-     * @var Object
-     */
-    private $SesClient;
-
-    /**
      * sender email
      *
      * @var String
