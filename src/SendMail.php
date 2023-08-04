@@ -527,7 +527,7 @@ class SendMail
                 ],
                 'ReplyToAddresses' => [$this->sender_email],
                 'Source' => $this->sender_email,
-                'Message' => $message,
+                'RawMessage' => $message,
                 'Attachments' => !empty($this->attachments) ? $this->createAttachments() : ""
 
                 // And if you aren't using a configuration set, comment or delete the
