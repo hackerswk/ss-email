@@ -212,12 +212,11 @@ class Notification
             if ($data['Type'] == "SubscriptionConfirmation") {
                 $subscription_token = $data['Token'];
                 $topic = $data['TopicArn'];
-                $result = $this->confirmSubscription($subscription_token, $topic);
-                if (!isset($result['SubscriptionArn'])) {
-                    throw new Exception("Subscription confirm failed!");
-                }
+                $subscribeUrl = $data['SubscribeURL'];
+                file_get_contents($subscribeUrl); // subscription confirm use GET request
+
                 $myfile = fopen("./upload/cs_response.txt", "w") or die("Unable to open file!");
-                $txt = "SubscriptionArn: " . $result['SubscriptionArn'];
+                $txt = "Subscription confirm OK!";
                 fwrite($myfile, $txt);
                 fclose($myfile);
             }
