@@ -16,13 +16,6 @@ use \Exception as Exception;
 class Notification
 {
     /**
-     * aws sns object
-     *
-     * @var Object
-     */
-    private $SnsClient;
-
-    /**
      * sns client profile
      *
      * @var String
@@ -274,7 +267,7 @@ class Notification
         //$topic = 'arn:aws:sns:us-east-1:111122223333:MyTopic';
 
         try {
-            $this->SnsClient = new SnsClient([
+            $SnsClient = new SnsClient([
                 'profile' => $this->profile,
                 'version' => $this->version,
                 'region' => $this->region,
