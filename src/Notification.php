@@ -212,7 +212,7 @@ class Notification
     {
         try {
             $json = file_get_contents('php://input');
-            $data = json_decode($json, JSON_PRETTY_PRINT);
+            $data = json_decode($json, true);
             if (!is_array($data)) {
                 throw new Exception("Data is not array!");
             }
