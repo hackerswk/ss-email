@@ -354,7 +354,7 @@ class Notification
             }
 
             $myfile = fopen("./upload/ses_reject.txt", "a") or die("Unable to open file!");
-            $txt = $topic['reject']['reason'] . "\n";
+            $txt = date("Y-m-d H:i:s") . "reason: " . $topic['reject']['reason'] . "\n";
             fwrite($myfile, $txt);
             fclose($myfile);
         } catch (Exception $e) {
