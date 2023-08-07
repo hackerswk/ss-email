@@ -167,7 +167,7 @@ class Notification
      */
     public function __construct()
     {
-        
+
     }
 
     /**
@@ -186,7 +186,7 @@ class Notification
             $SnsClient = new SnsClient([
                 'profile' => $this->profile,
                 'version' => $this->version,
-                'region' => $this->region
+                'region' => $this->region,
             ]);
             $result = $SnSclient->subscribe([
                 'Protocol' => $protocol,
@@ -216,6 +216,18 @@ class Notification
             if (!is_array($data)) {
                 throw new Exception("Data is not array!");
             }
+            if ($data['Type'] == "SubscriptionConfirmation") {
+                $subscription_token = $data['Token'];
+                $topic = $data['TopicArn'];
+                $result = $this->confirmSubscription($subscription_token, $topic);
+                if (!isset($result['SubscriptionArn'])) {
+                    throw new Exception("Subscription confirm failed!");
+                }
+                $myfile = fopen("./upload/cs_response.txt", "w") or die("Unable to open file!");
+                $txt = "SubscriptionArn: " . $result['SubscriptionArn'];
+                fwrite($myfile, $txt);
+                fclose($myfile);
+            }
 
         } catch (AwsException $e) {
             throw new AwsException($e->getMessage());
@@ -236,7 +248,7 @@ class Notification
             $SnsClient = new SnsClient([
                 'profile' => $this->profile,
                 'version' => $this->version,
-                'region' => $this->region
+                'region' => $this->region,
             ]);
             $result = $SnSclient->getTopicAttributes([
                 'TopicArn' => $topic,
@@ -265,7 +277,7 @@ class Notification
             $this->SnsClient = new SnsClient([
                 'profile' => $this->profile,
                 'version' => $this->version,
-                'region' => $this->region
+                'region' => $this->region,
             ]);
             $result = $SnSclient->confirmSubscription([
                 'Token' => $subscription_token,
@@ -276,7 +288,7 @@ class Notification
             // output error message if fails
             throw new AwsException($e->getMessage());
         }
-        
-        return json_decode($result, true);
+
+        return $result;
     }
 }
