@@ -283,4 +283,83 @@ class Notification
 
         return $result;
     }
+
+    /**
+     * bounce event handle.
+     *
+     * @param
+     * @return Array
+     */
+    public function getBounceEvent(array $topic)
+    {
+        try {
+            if (!is_array($topic)) {
+                throw new Exception("Topic is not array!");
+            }
+
+            if (!isset($topic['eventType']) || $topic['eventType'] !== 'Bounce') {
+                throw new Exception("EventType is not bounce!");
+            }
+
+            $result = $topic['bounce']['bouncedRecipients'];
+        } catch (Exception $e) {
+            // output error message if fails
+            throw new Exception($e->getMessage());
+        }
+
+        return $result;
+    }
+
+    /**
+     * complaint event handle.
+     *
+     * @param
+     * @return Array
+     */
+    public function getComplaintEvent(array $topic)
+    {
+        try {
+            if (!is_array($topic)) {
+                throw new Exception("Topic is not array!");
+            }
+
+            if (!isset($topic['eventType']) || $topic['eventType'] !== 'Complaint') {
+                throw new Exception("EventType is not complaint!");
+            }
+
+            $result = $topic['complaint']['complainedRecipients'];
+        } catch (Exception $e) {
+            // output error message if fails
+            throw new Exception($e->getMessage());
+        }
+
+        return $result;
+    }
+
+    /**
+     * reject event handle.
+     *
+     * @param
+     * @return void
+     */
+    public function getRejectEvent(array $topic)
+    {
+        try {
+            if (!is_array($topic)) {
+                throw new Exception("Topic is not array!");
+            }
+
+            if (!isset($topic['eventType']) || $topic['eventType'] !== 'Reject') {
+                throw new Exception("EventType is not reject!");
+            }
+
+            $myfile = fopen("./upload/ses_reject.txt", "a") or die("Unable to open file!");
+            $txt = $topic['reject']['reason'] . "\n";
+            fwrite($myfile, $txt);
+            fclose($myfile);
+        } catch (Exception $e) {
+            // output error message if fails
+            throw new Exception($e->getMessage());
+        }
+    }
 }
