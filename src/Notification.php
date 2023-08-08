@@ -214,11 +214,12 @@ class Notification
                 $topic = $data['TopicArn'];
                 $subscribeUrl = $data['SubscribeURL'];
                 file_get_contents($subscribeUrl); // subscription confirm use GET request
-
+                /*
                 $myfile = fopen("./upload/cs_response.txt", "w") or die("Unable to open file!");
                 $txt = "Subscription confirm OK!";
                 fwrite($myfile, $txt);
                 fclose($myfile);
+                */
             }
 
         } catch (AwsException $e) {
@@ -352,11 +353,12 @@ class Notification
             if (!isset($topic['eventType']) || $topic['eventType'] !== 'Reject') {
                 throw new Exception("EventType is not reject!");
             }
-
+            /*
             $myfile = fopen("./upload/ses_reject.txt", "a") or die("Unable to open file!");
             $txt = date("Y-m-d H:i:s") . "reason: " . $topic['reject']['reason'] . "\n";
             fwrite($myfile, $txt);
             fclose($myfile);
+            */
         } catch (Exception $e) {
             // output error message if fails
             throw new Exception($e->getMessage());
