@@ -101,7 +101,7 @@ class MailPool
                 ':date' => date('Y-m-d'),
             ]);
             $b = $query->fetch(\PDO::FETCH_ASSOC);
-            $quota = $b['batch'] * 30;
+            $quota = $b['batch'] * 50;
             if ($quota < 24000) {
                 // 若寄送限制未超標, 每次最多回傳50個待處理批次
                 $sql = 'SELECT * FROM emailing_pool ';
