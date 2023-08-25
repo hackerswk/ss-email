@@ -200,4 +200,30 @@ class MailPool
         return $bcc_arrays;
     }
 
+    /**
+     * delete mail pool for sent time < param day
+     * 
+     * @param $day
+     * @return bool
+     */
+    public function delMailPool($day)
+    {
+        try {
+            $del_time = date("Y-m-d", strtotime("- $day day", strtotime(date("Y-m-d"))));
+            $sql = 'DELETE FROM emailing_pool ';
+            $sql .= 'WHERE  sent_time < :del_time';
+            $query = $this->database->prepare($sql);
+            $query->execute([
+                ':sent_time' => $del_time,
+            ]);
+            if ($query->rowCount() == 0 && $query->errorCode() != '00000') {
+                return false;
+            }
+            
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+        return true;
+    }
+
 }

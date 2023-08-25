@@ -343,14 +343,25 @@ class SendMail
             'version' => $this->version,
             'region' => $this->region
         ]);
-        
-        $emailParams = [
-            'Source' => $this->sender_email, // 寄件者電子郵件地址
-            'Destination' => [
+
+        if (!empty($this->cc)) {
+            $destination = [
+                'ToAddresses' => $this->recipient_emails,
+                'CcAddresses' => $this->cc
+            ];
+        }
+
+        if (!empty($this->cc) && !empty($this->bcc)) {
+            $destination = [
                 'ToAddresses' => $this->recipient_emails,
                 'CcAddresses' => $this->cc,
                 'BccAddresses' => $this->bcc
-            ],
+            ];
+        }
+        
+        $emailParams = [
+            'Source' => $this->sender_email, // 寄件者電子郵件地址
+            'Destination' => $destination,
         ];
 
         if (!empty($this->html_body)) {
