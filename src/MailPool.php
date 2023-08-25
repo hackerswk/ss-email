@@ -214,7 +214,7 @@ class MailPool
             $sql .= 'WHERE  sent_time < :del_time';
             $query = $this->database->prepare($sql);
             $query->execute([
-                ':sent_time' => $del_time,
+                ':del_time' => $del_time,
             ]);
             if ($query->rowCount() == 0 && $query->errorCode() != '00000') {
                 return false;
