@@ -70,7 +70,7 @@ class SendBatch
                 } else {
                     $status = 'failure';
                 }
-                if (!$this->test->updateMailPool($val['id'], date("Y-m-d H:i:s", time()), $status, $messageId)) {
+                if (!$MailPool->updateMailPool($val['id'], date("Y-m-d H:i:s", time()), $status, $messageId)) {
                     echo 'update mail pool failure!';
                     return false;
                 }
