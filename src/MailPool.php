@@ -38,7 +38,7 @@ class MailPool
      * @param $cc
      * @param $bcc
      * @param $attachments
-     * @return Bool
+     * @return integer
      */
     public function setMailPool($subject, $body, array $_to, $_from, array $cc = null, array $bcc = null, array $attachments = null)
     {
@@ -81,7 +81,7 @@ class MailPool
             throw new Exception($e->getMessage());
         }
 
-        return true;
+        return $this->database->lastInsertId();
     }
 
     /**

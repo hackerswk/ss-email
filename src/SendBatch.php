@@ -9,9 +9,9 @@
 
 namespace Stanleysie\SsEmail;
 
-use MailPool;
-use MailBlock;
-use SendMail;
+use Stanleysie\SsEmail\MailPool;
+use Stanleysie\SsEmail\MailBlock;
+use Stanleysie\SsEmail\SendMail;
 use \Exception as Exception;
 
 class SendBatch
