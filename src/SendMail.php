@@ -351,6 +351,13 @@ class SendMail
             ];
         }
 
+        if (!empty($this->bcc)) {
+            $destination = [
+                'ToAddresses' => $this->recipient_emails,
+                'BccAddresses' => $this->bcc
+            ];
+        }
+
         if (!empty($this->cc) && !empty($this->bcc)) {
             $destination = [
                 'ToAddresses' => $this->recipient_emails,
