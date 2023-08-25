@@ -29,7 +29,7 @@ class SendBatch
      * 
      * @return bool
      */
-    public function send()
+    public function send($profile, $version, $region)
     {
         try {
             $SendMail = new SendMail();
@@ -40,11 +40,11 @@ class SendBatch
                 echo 'no batch!';
                 return false;
             }
-            
+            /*
             $profile = 'default';
             $version = '2010-12-01';
             $region = 'us-west-2';
-
+            */
             $SendMail->setProfile($profile);
             $SendMail->setVersion($version);
             $SendMail->setRegion($region);
