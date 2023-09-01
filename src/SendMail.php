@@ -344,6 +344,10 @@ class SendMail
             'region' => $this->region
         ]);
 
+        $destination = [
+            'ToAddresses' => $this->recipient_emails
+        ];
+
         if (!empty($this->cc)) {
             $destination = [
                 'ToAddresses' => $this->recipient_emails,
