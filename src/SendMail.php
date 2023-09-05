@@ -387,7 +387,7 @@ class SendMail
 
         try {
             $subject = $this->subject;
-            $attachments = !empty($this->attachments) ? $this->createAttachments() : ""; 
+            $attachments = !empty($this->attachments) ? $this->createAttachments() : []; 
             $messageData = $this->createMimeMessage($this->sender_email, $this->recipient_emails, $subject, $body, $ctype, $this->cc, $this->bcc, $attachments);
 
             $emailParams['RawMessage'] = [
@@ -434,7 +434,7 @@ class SendMail
         $message .= $body;
         $message .= "\r\n";
 
-        if ($attachments) {
+        if (count($attachments) > 0) {
             foreach ($attachments as $attachment) {
                 $message .= "--{$boundary}\r\n";
                 $message .= "Content-Type: application/pdf\r\n";
