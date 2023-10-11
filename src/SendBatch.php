@@ -56,11 +56,26 @@ class SendBatch
                         echo $val2 . ' is block! \n';
                         continue;
                     }
+
+                    if (!$this->filterEmail($val2)) {
+                        $MailBlock->setMailBlock($val2, "invalid");
+                        continue;
+                    }
                 }
 
                 $SendMail->setRecipient($val['_to']);
                 if (!empty($val['cc'])) $SendMail->setCc($val['cc']);
-                if (!empty($val['bcc'])) $SendMail->setBcc($val['bcc']);
+                if (!empty($val['bcc'])) {
+                    $bcc_array = [];
+                    foreach ($val['bcc'] as $val3) {
+                        if (!$this->filterEmail($val3)) {
+                            $MailBlock->setMailBlock($val3, "invalid");
+                            continue;
+                        }
+                        array_push($bcc_array, $val3);
+                    }
+                    $SendMail->setBcc($bcc_array);
+                }
                 $SendMail->setSubject($val['subject']);
                 $SendMail->setHtmlBody($val['body']);
                 if (!empty($val['attachments'])) $SendMail->setAttachments($val['attachments']);
@@ -102,6 +117,30 @@ class SendBatch
         }
 
         echo 'Clear expire email pool done.';
+        return true;
+    }
+
+    /**
+     * filter email
+     *
+     * @param $email 
+     * @return bool
+     */
+    public function filterEmail($email)
+    {
+        try {
+            $email_array = explode("@", $email);
+            $email_array_2 = explode(".", $email_array[1]);
+            foreach ($email_array_2 as $val) {
+                $standard = "/^([a-z0-9]+)$/";
+                if(!preg_match($standard, $val)) {
+                    return false;
+                }
+            }
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+
         return true;
     }
 }
