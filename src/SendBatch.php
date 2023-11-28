@@ -59,9 +59,16 @@ class SendBatch
 
                     if (!$this->filterEmail($val2)) {
                         $MailBlock->setMailBlock($val2, "invalid");
+                        if (($key = array_search($val2, $val['_to'])) !== false) {
+                            unset($val['_to'][$key]);
+                        }
                         continue;
                     }
                 }
+
+                if (count($val['_to']) == 0) {
+                    continue;
+                }                
 
                 $SendMail->setRecipient($val['_to']);
                 if (!empty($val['cc'])) $SendMail->setCc($val['cc']);
