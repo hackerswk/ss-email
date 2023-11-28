@@ -52,16 +52,16 @@ class SendBatch
                 $SendMail->setSender($val['_from']);
 
                 foreach ($val['_to'] as $val2) {
-                    if ($MailBlock->getBlockEmail($val2)) {
-                        echo $val2 . ' is block! \n';
-                        continue;
-                    }
-
                     if (!$this->filterEmail($val2)) {
                         $MailBlock->setMailBlock($val2, "invalid");
                         if (($key = array_search($val2, $val['_to'])) !== false) {
                             unset($val['_to'][$key]);
                         }
+                        continue;
+                    }
+
+                    if ($MailBlock->getBlockEmail($val2)) {
+                        echo $val2 . ' is block! \n';
                         continue;
                     }
                 }
