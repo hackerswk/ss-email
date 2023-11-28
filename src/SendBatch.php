@@ -129,13 +129,8 @@ class SendBatch
     public function filterEmail($email)
     {
         try {
-            $email_array = explode("@", $email);
-            $email_array_2 = explode(".", $email_array[1]);
-            foreach ($email_array_2 as $val) {
-                $standard = "/^([a-z0-9]+)$/";
-                if(!preg_match($standard, $val)) {
-                    return false;
-                }
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                return false;
             }
         } catch (Exception $e) {
             throw new Exception($e->getMessage());
