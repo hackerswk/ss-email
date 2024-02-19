@@ -76,7 +76,8 @@ class SendBatch
                 
                 if (count($val['_to']) == 0) {
                     continue;
-                } 
+                }
+                echo $val['_to'][0] . PHP_EOL; 
 
                 $SendMail->setRecipient($val['_to']);
                 if (!empty($val['cc'])) $SendMail->setCc($val['cc']);
