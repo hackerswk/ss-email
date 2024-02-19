@@ -53,10 +53,8 @@ class SendBatch
 
                 foreach ($val['_to'] as $val2) {
 
-                    echo $val2 . '\n';
-
                     if ($MailBlock->getBlockEmail($val2)) {
-                        echo $val2 . ' is block! \n';
+                        echo $val2 . ' is block!' . PHP_EOL;
                         if (($key = array_search($val2, $val['_to'])) !== false) {
                             unset($val['_to'][$key]);
                         }
@@ -64,7 +62,7 @@ class SendBatch
                     }
 
                     if (!$this->filterEmail($val2)) {
-                        echo $val2 . ' is invalid! \n';
+                        echo $val2 . ' is invalid!' . PHP_EOL;
                         if (!$MailBlock->getBlockEmail($val2)) {
                             $MailBlock->setMailBlock($val2, "invalid");
                         }
