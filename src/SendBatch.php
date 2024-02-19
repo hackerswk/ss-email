@@ -54,6 +54,10 @@ class SendBatch
                 $SendMail->setSender($val['_from']);
 
                 foreach ($val['_to'] as $val2) {
+
+                    $err = '_to: ' . $val['_to'][0];
+                    $this->setLog($err);
+
                     if ($MailBlock->getBlockEmail($val2)) {
                         //echo $val2 . ' is block! \n';
                         if (($key = array_search($val2, $val['_to'])) !== false) {
