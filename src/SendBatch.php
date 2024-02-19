@@ -37,7 +37,9 @@ class SendBatch
             $MailBlock = new MailBlock($this->database);
             $returnData = $MailPool->getMailPool();
             if ($returnData->status != 'success' || count($returnData->batch) == 0) {
-                echo 'no batch!';
+                //echo 'no batch!';
+                $err = 'no batch';
+                $this->setLog($err);
                 return false;
             }
             /*
@@ -99,12 +101,16 @@ class SendBatch
                     $status = 'failure';
                 }
                 if (!$MailPool->updateMailPool($val['id'], date("Y-m-d H:i:s", time()), $status, $messageId)) {
-                    echo 'update mail pool failure!';
+                    //echo 'update mail pool failure!';
+                    $err = 'update mail pool failure!';
+                    $this->setLog($err);
                     return false;
                 }
             }
         } catch (Exception $e) {
-            throw new Exception($e->getMessage());
+            //throw new Exception($e->getMessage());
+            $this->setLog($e->getMessage());
+            return false; 
         }
 
         echo 'Send email done.';
@@ -150,5 +156,19 @@ class SendBatch
         }
 
         return true;
+    }
+
+    /**
+     * Set error log
+     *
+     * @param $err
+     * @return void
+     */
+    public function setLog($err)
+    {
+        $myfile = fopen(__DIR__ . '/../../public/upload/ses.txt', "a") or die("Unable to open file!");
+        $txt = date("Y-m-d H:i:s") . "--err: " . $err . "\n";
+        fwrite($myfile, $txt);
+        fclose($myfile);
     }
 }
