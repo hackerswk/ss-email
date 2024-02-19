@@ -78,6 +78,9 @@ class SendBatch
                     continue;
                 } 
 
+                $err = 'to: ' . $val['_to'][0];
+                $this->setLog($err);
+
                 $SendMail->setRecipient($val['_to']);
                 if (!empty($val['cc'])) $SendMail->setCc($val['cc']);
                 if (!empty($val['bcc'])) {
