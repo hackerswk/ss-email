@@ -95,20 +95,21 @@ class MailPool
         $sendBatches = [];
         try {
             // 檢查每日寄送限制是否超標 (24000 封/天)
-            $sql = 'SELECT COUNT(id) AS batch FROM emailing_pool WHERE sending_time = :date ';
+            $sql = 'SELECT COUNT(id) AS batch FROM emailing_pool WHERE sending_time LIKE :date ';
             $query = $this->database->prepare($sql);
             $query->execute([
-                ':date' => date('Y-m-d'),
+                ':date' => date('Y-m-d') . '%',
             ]);
             $b = $query->fetch(\PDO::FETCH_ASSOC);
             $quota = $b['batch'] * 50;
             if ($quota < 24000) {
                 // 若寄送限制未超標, 每次最多回傳50個待處理批次
                 $sql = 'SELECT * FROM emailing_pool ';
-                $sql .= 'WHERE id > :id AND status IS NULL LIMIT 50';
+                $sql .= 'WHERE id > :id AND status IS NULL AND sending_time LIKE :date LIMIT 0, 50';
                 $query = $this->database->prepare($sql);
                 $query->execute([
                     ':id' => 0,
+                    ':date' => date('Y-m-d') . '%',
                 ]);
                 $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
                 foreach ($rows as $row) {
