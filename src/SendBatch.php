@@ -54,7 +54,16 @@ class SendBatch
                 foreach ($val['_to'] as $val2) {
 
                     if ($MailBlock->getBlockEmail($val2)) {
-                        echo $val2 . ' is block!' . PHP_EOL;
+                        //echo $val2 . ' is block!' . PHP_EOL;
+                        if (count($val['_to']) == 1) {
+                            $status = 'failure';
+                            $messageId = 'F-000000';
+                            if (!$MailPool->updateMailPool($val['id'], date("Y-m-d H:i:s", time()), $status, $messageId)) {
+                                echo 'update mail pool failure!' . PHP_EOL;
+                                //return false;
+                            }
+                        }
+
                         if (($key = array_search($val2, $val['_to'])) !== false) {
                             unset($val['_to'][$key]);
                         }
@@ -62,9 +71,18 @@ class SendBatch
                     }
 
                     if (!$this->filterEmail($val2)) {
-                        echo $val2 . ' is invalid!' . PHP_EOL;
+                        //echo $val2 . ' is invalid!' . PHP_EOL;
                         if (!$MailBlock->getBlockEmail($val2)) {
                             $MailBlock->setMailBlock($val2, "invalid");
+                        }
+
+                        if (count($val['_to']) == 1) {
+                            $status = 'failure';
+                            $messageId = 'F-000000';
+                            if (!$MailPool->updateMailPool($val['id'], date("Y-m-d H:i:s", time()), $status, $messageId)) {
+                                echo 'update mail pool failure!' . PHP_EOL;
+                                //return false;
+                            }
                         }
                         
                         if (($key = array_search($val2, $val['_to'])) !== false) {
