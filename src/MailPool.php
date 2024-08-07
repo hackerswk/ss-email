@@ -29,39 +29,55 @@ class MailPool
     }
 
     /**
-     * set mail pool
-     * 
-     * @param $subject
-     * @param $body
-     * @param $to
-     * @param $from
-     * @param $cc
-     * @param $bcc
-     * @param $attachments
-     * @return integer
+     * Inserts a new email record into the emailing pool.
+     *
+     * @param string $subject The subject of the email.
+     * @param string $body The body of the email.
+     * @param array $to The recipient email addresses.
+     * @param string $from The sender's email address.
+     * @param array|null $cc Optional CC email addresses.
+     * @param array|null $bcc Optional BCC email addresses.
+     * @param array|null $attachments Optional email attachments.
+     * @param int $emailType The type of email (default is 1, normal).
+     *
+     * @return int|bool The ID of the newly inserted record, or false on failure.
+     *
+     * @throws Exception If any required parameters are missing or if the database operation fails.
      */
-    public function setMailPool($subject, $body, array $_to, $_from, array $cc = null, array $bcc = null, array $attachments = null)
-    {
+    public function setMailPool(
+        string $subject,
+        string $body,
+        array $_to,
+        string $_from,
+        array $cc = null,
+        array $bcc = null,
+        array $attachments = null,
+        int $emailType = 1
+    ) {
         try {
-            if (!isset($subject) && empty($subject)) {
-                throw new Exception("subject is empty!");
+            // Validate inputs
+            if (empty($subject)) {
+                throw new Exception("Subject is empty!");
             }
 
-            if (!isset($body) && empty($body)) {
-                throw new Exception("body is empty!");
+            if (empty($body)) {
+                throw new Exception("Body is empty!");
             }
 
-            if (!isset($_to) && empty($_to)) {
-                throw new Exception("email to is empty!");
+            if (empty($_to)) {
+                throw new Exception("Email 'to' is empty!");
             }
 
-            if (!isset($_from) && empty($_from)) {
-                throw new Exception("email from is empty!");
+            if (empty($_from)) {
+                throw new Exception("Email 'from' is empty!");
             }
 
+            // Prepare SQL statement
             $sql = 'INSERT INTO emailing_pool ';
-            $sql .= 'SET _from = :_from, _to = :_to, cc = :cc, bcc = :bcc, ';
-            $sql .= 'subject =:subject, body = :body, attachments = :attachments';
+            $sql .= '(_from, _to, cc, bcc, subject, body, attachments, email_type) ';
+            $sql .= 'VALUES (:_from, :_to, :cc, :bcc, :subject, :body, :attachments, :email_type)';
+
+            // Prepare and execute the query
             $query = $this->database->prepare($sql);
             $query->execute([
                 ':_from' => $_from,
@@ -70,9 +86,11 @@ class MailPool
                 ':bcc' => isset($bcc) ? json_encode($bcc) : '',
                 ':subject' => $subject,
                 ':body' => $body,
-                ':attachments' => isset($attachments) ? json_encode($attachments) : ''
+                ':attachments' => isset($attachments) ? json_encode($attachments) : '',
+                ':email_type' => $emailType, // Include the email type in the query
             ]);
 
+            // Check if insert was successful
             if ($query->rowCount() === 0 || !$this->database->lastInsertId()) {
                 return false;
             }
@@ -85,31 +103,42 @@ class MailPool
     }
 
     /**
-     * get mail pool
-     * 
-     * @return Array
+     * Retrieves email batches from the pool that are scheduled to be sent.
+     * Checks the daily sending limit and returns a maximum of 50 batches that are pending.
+     *
+     * @param int $emailType The type of email to retrieve (1 for normal, 2 for blackcard edm). Default is 1.
+     *
+     * @return \stdClass An object containing the status of the operation and the list of email batches.
+     *                  - status: 'success' or 'failure'
+     *                  - batch: Array of email batches (if successful)
+     *                  - message: Error message (if failure)
+     *
+     * @throws Exception If an error occurs during database operations.
      */
-    public function getMailPool()
+    public function getMailPool(int $emailType = 1)
     {
         $returnData = new \stdClass();
         $sendBatches = [];
+
         try {
-            // 檢查每日寄送限制是否超標 (24000 封/天)
-            $sql = 'SELECT COUNT(id) AS batch FROM emailing_pool WHERE sending_time LIKE :date ';
+            // Check the daily sending limit (24,000 emails/day)
+            $sql = 'SELECT COUNT(id) AS batch FROM emailing_pool WHERE sending_time LIKE :date AND email_type = :emailType';
             $query = $this->database->prepare($sql);
             $query->execute([
                 ':date' => date('Y-m-d') . '%',
+                ':emailType' => $emailType,
             ]);
             $b = $query->fetch(\PDO::FETCH_ASSOC);
             $quota = $b['batch'] * 50;
             if ($quota < 24000) {
-                // 若寄送限制未超標, 每次最多回傳50個待處理批次
+                // If sending limit is not exceeded, return up to 50 pending batches
                 $sql = 'SELECT * FROM emailing_pool ';
-                $sql .= 'WHERE id > :id AND status IS NULL AND sending_time LIKE :date LIMIT 0, 50';
+                $sql .= 'WHERE id > :id AND status IS NULL AND sending_time LIKE :date AND email_type = :emailType LIMIT 0, 50';
                 $query = $this->database->prepare($sql);
                 $query->execute([
                     ':id' => 0,
                     ':date' => date('Y-m-d') . '%',
+                    ':emailType' => $emailType,
                 ]);
                 $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
                 foreach ($rows as $row) {
@@ -126,12 +155,13 @@ class MailPool
             $returnData->status = 'failure';
             $returnData->message = $e->getMessage();
         }
+
         return $returnData;
     }
 
     /**
      * update mail pool
-     * 
+     *
      * @param $id
      * @param $sent_time
      * @param $status
@@ -169,7 +199,7 @@ class MailPool
             if ($query->rowCount() == 0 && $query->errorCode() != '00000') {
                 return false;
             }
-            
+
         } catch (Exception $e) {
             throw new Exception($e->getMessage());
         }
@@ -189,7 +219,7 @@ class MailPool
         $bcc_arrays = [];
         $star = 0;
         $end = 50;
-        for ($i=0; $i < $bcc_send_num; $i++) { 
+        for ($i = 0; $i < $bcc_send_num; $i++) {
             $recipients_array = array_slice($recipients, $star, $end);
             $bcc_array['to'] = [$recipients_array[0]];
             $bcc_array['bcc'] = array_slice($recipients_array, 1);
@@ -203,7 +233,7 @@ class MailPool
 
     /**
      * delete mail pool for sent time < param day
-     * 
+     *
      * @param $day
      * @return bool
      */
@@ -220,7 +250,7 @@ class MailPool
             if ($query->rowCount() == 0 && $query->errorCode() != '00000') {
                 return false;
             }
-            
+
         } catch (Exception $e) {
             throw new Exception($e->getMessage());
         }

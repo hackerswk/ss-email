@@ -9,8 +9,8 @@
 
 namespace Stanleysie\SsEmail;
 
-use Stanleysie\SsEmail\MailPool;
 use Stanleysie\SsEmail\MailBlock;
+use Stanleysie\SsEmail\MailPool;
 use Stanleysie\SsEmail\SendMail;
 use \Exception as Exception;
 
@@ -26,16 +26,16 @@ class SendBatch
 
     /**
      * send email batch
-     * 
+     *
      * @return bool
      */
-    public function send($profile, $version, $region)
+    public function send($profile, $version, $region, $emailType = 1)
     {
         try {
             $SendMail = new SendMail();
             $MailPool = new MailPool($this->database);
             $MailBlock = new MailBlock($this->database);
-            $returnData = $MailPool->getMailPool();
+            $returnData = $MailPool->getMailPool($emailType);
             if ($returnData->status != 'success' || count($returnData->batch) == 0) {
                 echo 'no batch!';
                 return false;
@@ -44,7 +44,7 @@ class SendBatch
             $profile = 'default';
             $version = '2010-12-01';
             $region = 'us-west-2';
-            */
+             */
             $SendMail->setProfile($profile);
             $SendMail->setVersion($version);
             $SendMail->setRegion($region);
@@ -84,21 +84,24 @@ class SendBatch
                                 //return false;
                             }
                         }
-                        
+
                         if (($key = array_search($val2, $val['_to'])) !== false) {
                             unset($val['_to'][$key]);
                         }
                         continue;
                     }
                 }
-                
+
                 if (count($val['_to']) == 0) {
                     continue;
                 }
-                //echo $val['_to'][0] . PHP_EOL; 
+                //echo $val['_to'][0] . PHP_EOL;
 
                 $SendMail->setRecipient($val['_to']);
-                if (!empty($val['cc'])) $SendMail->setCc($val['cc']);
+                if (!empty($val['cc'])) {
+                    $SendMail->setCc($val['cc']);
+                }
+
                 if (!empty($val['bcc'])) {
                     $bcc_array = [];
                     foreach ($val['bcc'] as $val3) {
@@ -112,7 +115,10 @@ class SendBatch
                 }
                 $SendMail->setSubject($val['subject']);
                 $SendMail->setHtmlBody($val['body']);
-                if (!empty($val['attachments'])) $SendMail->setAttachments($val['attachments']);
+                if (!empty($val['attachments'])) {
+                    $SendMail->setAttachments($val['attachments']);
+                }
+
                 $messageId = $SendMail->sendEmail();
                 if (!empty($messageId)) {
                     $status = 'success';
@@ -126,8 +132,8 @@ class SendBatch
             }
         } catch (Exception $e) {
             //throw new Exception($e->getMessage());
-            echo $e->getMessage(); 
-            return false; 
+            echo $e->getMessage();
+            return false;
         }
 
         echo 'Send email done.';
@@ -137,7 +143,7 @@ class SendBatch
     /**
      * clear email batch
      *
-     * @param $day 
+     * @param $day
      * @return bool
      */
     public function clearBatch($day)
@@ -159,7 +165,7 @@ class SendBatch
     /**
      * filter email
      *
-     * @param $email 
+     * @param $email
      * @return bool
      */
     public function filterEmail($email)
