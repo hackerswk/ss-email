@@ -213,19 +213,19 @@ class MailPool
      */
     public function createToAndBcc($recipients)
     {
-        $bcc_send_num = intval(ceil(count($recipients) / 50));
+        $bcc_send_num = intval(ceil(count($recipients) / 45));
 
         $bcc_array = [];
         $bcc_arrays = [];
         $star = 0;
-        $end = 50;
+        $end = 45;
         for ($i = 0; $i < $bcc_send_num; $i++) {
             $recipients_array = array_slice($recipients, $star, $end);
             $bcc_array['to'] = [$recipients_array[0]];
             $bcc_array['bcc'] = array_slice($recipients_array, 1);
             array_push($bcc_arrays, $bcc_array);
-            $star += 50;
-            $end += 50;
+            $star += 45;
+            $end += 45;
         }
 
         return $bcc_arrays;
