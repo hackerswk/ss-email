@@ -9,8 +9,8 @@
 
 namespace Stanleysie\SsEmail;
 
-use Aws\Ses\SesClient;
 use Aws\Exception\AwsException;
+use Aws\Ses\SesClient;
 use \Exception as Exception;
 
 class SendMail
@@ -56,7 +56,7 @@ class SendMail
      * @var Array
      */
     private $cc = array();
-    
+
     /**
      * email bcc
      *
@@ -84,7 +84,7 @@ class SendMail
      * @var String
      */
     private $version;
-    
+
     /**
      * ses client region
      *
@@ -94,144 +94,144 @@ class SendMail
 
     /**
      * set sender email
-     * 
+     *
      * @param $sender_email
      */
     public function setSender($sender_email)
     {
         if (empty($sender_email)) {
-            throw new Exception ("sender email is empty!");
+            throw new Exception("sender email is empty!");
         }
         $this->sender_email = $sender_email;
     }
 
     /**
      * set recipient email
-     * 
+     *
      * @param $recipient_emails
      */
-    public function setRecipient(Array $recipient_emails)
+    public function setRecipient(array $recipient_emails)
     {
         if (empty($recipient_emails)) {
-            throw new Exception ("recipient emails is empty!");
+            throw new Exception("recipient emails is empty!");
         }
         $this->recipient_emails = $recipient_emails;
     }
 
     /**
      * set email cc
-     * 
+     *
      * @param $cc
      */
-    public function setCc(Array $cc)
+    public function setCc(array $cc)
     {
         if (empty($cc)) {
-            throw new Exception ("email cc is empty!");
+            throw new Exception("email cc is empty!");
         }
         $this->cc = $cc;
     }
 
     /**
      * set email bcc
-     * 
+     *
      * @param $bcc
      */
-    public function setBcc(Array $bcc)
+    public function setBcc(array $bcc)
     {
         if (empty($bcc)) {
-            throw new Exception ("email bcc is empty!");
+            throw new Exception("email bcc is empty!");
         }
         $this->bcc = $bcc;
     }
 
     /**
      * set email subject
-     * 
+     *
      * @param $subject
      */
     public function setSubject($subject)
     {
         if (empty($subject)) {
-            throw new Exception ("subject is empty!");
+            throw new Exception("subject is empty!");
         }
         $this->subject = $subject;
     }
 
     /**
      * set html body
-     * 
+     *
      * @param $html_body
      */
     public function setHtmlBody($html_body)
     {
         if (empty($html_body)) {
-            throw new Exception ("html body is empty!");
+            throw new Exception("html body is empty!");
         }
         $this->html_body = $html_body;
     }
 
     /**
      * set plaintext body
-     * 
+     *
      * @param $plaintext_body
      */
     public function setPlaintextBody($plaintext_body)
     {
         if (empty($plaintext_body)) {
-            throw new Exception ("plaintext body is empty!");
+            throw new Exception("plaintext body is empty!");
         }
         $this->plaintext_body = $plaintext_body;
     }
 
     /**
      * set mail attachments
-     * 
+     *
      * @param $attachments
      */
-    public function setAttachments(Array $attachments)
+    public function setAttachments(array $attachments)
     {
         if (empty($attachments)) {
-            throw new Exception ("attachments is empty!");
-        }   
+            throw new Exception("attachments is empty!");
+        }
         $this->attachments = $attachments;
     }
 
     /**
      * set ses client profile
-     * 
+     *
      * @param $profile
      */
     public function setProfile($profile)
     {
         if (empty($profile)) {
-            throw new Exception ("profile is empty!");
-        }   
+            throw new Exception("profile is empty!");
+        }
         $this->profile = $profile;
     }
 
     /**
      * set ses client version
-     * 
+     *
      * @param $version
      */
     public function setVersion($version)
     {
         if (empty($version)) {
-            throw new Exception ("version is empty!");
-        }   
+            throw new Exception("version is empty!");
+        }
         $this->version = $version;
     }
 
     /**
      * set ses client region
-     * 
+     *
      * @param $region
      */
     public function setRegion($region)
     {
         if (empty($region)) {
-            throw new Exception ("region is empty!");
-        }   
+            throw new Exception("region is empty!");
+        }
         $this->region = $region;
     }
 
@@ -282,7 +282,7 @@ class SendMail
     {
         return $this->html_body;
     }
-    
+
     /**
      * get plaintext body
      */
@@ -328,7 +328,7 @@ class SendMail
      */
     public function __construct()
     {
-        
+
     }
 
     /**
@@ -341,24 +341,24 @@ class SendMail
         $SesClient = new SesClient([
             'profile' => $this->profile,
             'version' => $this->version,
-            'region' => $this->region
+            'region' => $this->region,
         ]);
 
         $destination = [
-            'ToAddresses' => $this->recipient_emails
+            'ToAddresses' => $this->recipient_emails,
         ];
 
         if (!empty($this->cc)) {
             $destination = [
                 'ToAddresses' => $this->recipient_emails,
-                'CcAddresses' => $this->cc
+                'CcAddresses' => $this->cc,
             ];
         }
 
         if (!empty($this->bcc)) {
             $destination = [
                 'ToAddresses' => $this->recipient_emails,
-                'BccAddresses' => $this->bcc
+                'BccAddresses' => $this->bcc,
             ];
         }
 
@@ -366,10 +366,10 @@ class SendMail
             $destination = [
                 'ToAddresses' => $this->recipient_emails,
                 'CcAddresses' => $this->cc,
-                'BccAddresses' => $this->bcc
+                'BccAddresses' => $this->bcc,
             ];
         }
-        
+
         $emailParams = [
             'Source' => $this->sender_email, // 寄件者電子郵件地址
             'Destination' => $destination,
@@ -387,11 +387,11 @@ class SendMail
 
         try {
             $subject = $this->subject;
-            $attachments = !empty($this->attachments) ? $this->createAttachments() : []; 
+            $attachments = !empty($this->attachments) ? $this->createAttachments() : [];
             $messageData = $this->createMimeMessage($this->sender_email, $this->recipient_emails, $subject, $body, $ctype, $this->cc, $this->bcc, $attachments);
 
             $emailParams['RawMessage'] = [
-                'Data' => $messageData
+                'Data' => $messageData,
             ];
 
             // 寄送郵件
@@ -401,13 +401,15 @@ class SendMail
                 $messageId = $result['MessageId'];
             }
         } catch (AwsException $e) {
-            throw new AwsException ($e->getMessage());
+            // 正確地重新拋出異常
+            \Log::error('AWS Exception: ' . $e->getMessage());
+            throw $e; // 直接重新拋出捕獲到的異常
         }
 
         return $messageId;
     }
 
-    public function createMimeMessage($from, $to, $subject, $body, $ctype, Array $cc = null, Array $bcc = null, Array $attachments = null)
+    public function createMimeMessage($from, $to, $subject, $body, $ctype, array $cc = null, array $bcc = null, array $attachments = null)
     {
         $boundary = uniqid('np');
 
@@ -418,7 +420,7 @@ class SendMail
             'Cc' => implode(', ', $cc),
             'Bcc' => implode(', ', $bcc),
             'Subject' => $subject,
-            'Content-Type' => 'multipart/mixed; boundary=' . $boundary
+            'Content-Type' => 'multipart/mixed; boundary=' . $boundary,
         ];
 
         $message = '';
@@ -428,7 +430,7 @@ class SendMail
 
         $message .= "\r\n";
         $message .= "--{$boundary}\r\n";
-        $message .= "Content-Type: text/". $ctype . "; charset=UTF-8\r\n";
+        $message .= "Content-Type: text/" . $ctype . "; charset=UTF-8\r\n";
         $message .= "Content-Transfer-Encoding: 7bit\r\n";
         $message .= "\r\n";
         $message .= $body;
@@ -461,7 +463,7 @@ class SendMail
             $SesClient = new SesClient([
                 'profile' => $this->profile,
                 'version' => $this->version,
-                'region' => $this->region
+                'region' => $this->region,
             ]);
             $result = $SesClient->getSendQuota([]);
             $send_limit = $result["Max24HourSend"];
@@ -470,7 +472,7 @@ class SendMail
             //print("<p>You can send " . $available . " more messages in the next 24 hours.</p>");
             //var_dump($result);
         } catch (AwsException $e) {
-            throw new AwsException ($e->getMessage());
+            throw new AwsException($e->getMessage());
         }
 
         return $available;
@@ -485,13 +487,13 @@ class SendMail
     {
         $_attachment = [];
         $_attachments = [];
-        foreach($this->attachments as $attachment) {
+        foreach ($this->attachments as $attachment) {
             if (!file_exists($attachment)) {
-                throw new Exception ("file is not exist!");
+                throw new Exception("file is not exist!");
             }
 
             if (!is_file($attachment)) {
-                throw new Exception ("it is not file!");
+                throw new Exception("it is not file!");
             }
 
             $_attachment['FileName'] = basename($attachment);
