@@ -129,6 +129,7 @@ class SendBatch
                     echo 'update mail pool failure!';
                     return false;
                 }
+                sleep(2); // 延遲 2 秒
             }
         } catch (Exception $e) {
             //throw new Exception($e->getMessage());
