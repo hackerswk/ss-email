@@ -213,19 +213,35 @@ class MailPool
      */
     public function createToAndBcc($recipients)
     {
-        $bcc_send_num = intval(ceil(count($recipients) / 45));
+        // 每個批次的最大收件人數（包括 `to` 和 `bcc`）
+        $maxRecipientsPerBatch = 50;
+        // 每個 `bcc` 批次的最大數量
+        $maxBccPerBatch = 45;
 
-        $bcc_array = [];
+        // 計算批次數量
+        $totalBatches = ceil(count($recipients) / $maxRecipientsPerBatch);
+
         $bcc_arrays = [];
-        $star = 0;
-        $end = 45;
-        for ($i = 0; $i < $bcc_send_num; $i++) {
-            $recipients_array = array_slice($recipients, $star, $end);
-            $bcc_array['to'] = [$recipients_array[0]];
-            $bcc_array['bcc'] = array_slice($recipients_array, 1);
-            array_push($bcc_arrays, $bcc_array);
-            $star += 45;
-            $end += 45;
+        $start = 0;
+
+        for ($i = 0; $i < $totalBatches; $i++) {
+            // 定義每批次的收件人範圍
+            $recipientsArray = array_slice($recipients, $start, $maxRecipientsPerBatch);
+
+            // 設置 `to` 為批次中的第一個收件人
+            $to = [array_shift($recipientsArray)];
+
+            // 剩餘的收件人設為 `bcc`
+            $bcc = $recipientsArray;
+
+            // 構建批次數據
+            $bcc_arrays[] = [
+                'to' => $to,
+                'bcc' => $bcc,
+            ];
+
+            // 更新下一批次的起始位置
+            $start += $maxRecipientsPerBatch;
         }
 
         return $bcc_arrays;
