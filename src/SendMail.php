@@ -489,11 +489,13 @@ class SendMail
         $_attachments = [];
         foreach ($this->attachments as $attachment) {
             if (!file_exists($attachment)) {
-                throw new Exception("file is not exist!");
+                //throw new Exception("file is not exist!");
+                continue;
             }
 
             if (!is_file($attachment)) {
-                throw new Exception("it is not file!");
+                //throw new Exception("it is not file!");
+                continue;
             }
 
             $_attachment['FileName'] = basename($attachment);
