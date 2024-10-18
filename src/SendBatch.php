@@ -129,7 +129,9 @@ class SendBatch
                     echo 'update mail pool failure!';
                     return false;
                 }
-                sleep(3); // 延遲 2 秒
+                if (!empty($val['bcc'])) {
+                    sleep(3); // 延遲 2 秒
+                }
             }
         } catch (Exception $e) {
             //throw new Exception($e->getMessage());
