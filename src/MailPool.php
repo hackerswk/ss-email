@@ -122,7 +122,7 @@ class MailPool
 
         try {
             // Check the daily sending limit (24,000 emails/day)
-            $sql = 'SELECT COUNT(id) AS batch FROM emailing_pool WHERE sending_time LIKE :date AND email_type = :emailType';
+            $sql = 'SELECT COUNT(id) AS batch FROM emailing_pool WHERE status <> "success" AND status <> "failure" AND sending_time LIKE :date AND email_type = :emailType';
             $query = $this->database->prepare($sql);
             $query->execute([
                 ':date' => date('Y-m-d') . '%',
@@ -133,7 +133,7 @@ class MailPool
             if ($quota < 24000) {
                 // If sending limit is not exceeded, return up to 50 pending batches
                 $sql = 'SELECT * FROM emailing_pool ';
-                $sql .= 'WHERE id > :id AND status IS NULL AND sending_time LIKE :date AND email_type = :emailType LIMIT 0, 50';
+                $sql .= 'WHERE id > :id AND status <> "success" AND status <> "failure" AND sending_time LIKE :date AND email_type = :emailType LIMIT 0, 50';
                 $query = $this->database->prepare($sql);
                 $query->execute([
                     ':id' => 0,
@@ -203,6 +203,35 @@ class MailPool
         } catch (Exception $e) {
             throw new Exception($e->getMessage());
         }
+        return true;
+    }
+
+    public function updateMailStatus($id, $status)
+    {
+        try {
+            if (!isset($id) || empty($id)) {
+                throw new Exception("id is empty!");
+            }
+
+            if (!isset($status) || empty($status)) {
+                throw new Exception("status is empty!");
+            }
+
+            $sql = 'UPDATE emailing_pool SET status = :status WHERE id = :id';
+            $query = $this->database->prepare($sql);
+            $query->execute([
+                ':id' => $id,
+                ':status' => $status,
+            ]);
+
+            if ($query->rowCount() == 0 && $query->errorCode() != '00000') {
+                return false;
+            }
+
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+
         return true;
     }
 

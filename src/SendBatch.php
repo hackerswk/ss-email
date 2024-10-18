@@ -49,6 +49,15 @@ class SendBatch
             $SendMail->setVersion($version);
             $SendMail->setRegion($region);
             foreach ($returnData->batch as $val) {
+                // 檢查郵件狀態是否是處理中的郵件
+                if ($val['status'] === 'processing') {
+                    echo 'Email already processed or in progress for batch ID: ' . $val['id'];
+                    continue;
+                }
+
+                // 在發送之前，先將狀態更新為 "processing"
+                $MailPool->updateMailStatus($val['id'], 'processing');
+
                 $SendMail->setSender($val['_from']);
 
                 foreach ($val['_to'] as $val2) {
