@@ -121,6 +121,8 @@ class SendBatch
                         array_push($bcc_array, $val3);
                     }
                     $SendMail->setBcc($bcc_array);
+                } else {
+                    $SendMail->setBcc([]); // 清空 BCC
                 }
                 $SendMail->setSubject($val['subject']);
                 $SendMail->setHtmlBody($val['body']);
