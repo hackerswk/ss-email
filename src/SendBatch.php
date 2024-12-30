@@ -98,11 +98,17 @@ class SendBatch
                 }
 
                 if (!empty($val['bcc'])) {
-                    $SendMail->setBcc(array_filter($val['bcc'], function ($email) use ($MailBlock) {
+                    $filteredBcc = array_filter($val['bcc'], function ($email) use ($MailBlock) {
                         return $this->filterEmail($email) && !$MailBlock->getBlockEmail($email);
-                    }));
+                    });
+
+                    if (!empty($filteredBcc)) {
+                        $SendMail->setBcc($filteredBcc);
+                    } else {
+                        $SendMail->clearBcc(); // 自定義方法，確保清除之前的 BCC
+                    }
                 } else {
-                    $SendMail->setBcc(null);
+                    $SendMail->clearBcc(); // 清除上一批次的 BCC 設置
                 }
 
                 $SendMail->setSubject($val['subject']);

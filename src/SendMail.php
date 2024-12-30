@@ -334,6 +334,19 @@ class SendMail
     }
 
     /**
+     * Clear the BCC email addresses.
+     *
+     * This method resets the BCC email addresses to an empty array,
+     * ensuring no residual BCC data is included in subsequent email sending processes.
+     *
+     * @return void
+     */
+    public function clearBcc(): void
+    {
+        $this->bcc = [];
+    }
+
+    /**
      * send email use aws ses
      *
      * @return String
