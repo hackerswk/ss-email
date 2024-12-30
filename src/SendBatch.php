@@ -116,11 +116,11 @@ class SendBatch
                     $status = !empty($messageId) ? 'success' : 'failure';
                     $MailPool->updateMailStatus($val['id'], $status, $messageId ?? 'F-000000');
                 } catch (\Aws\Exception\AwsException $e) {
-                    \Log::error("AWS Exception during email sending for batch ID: {$val['id']}. Error: " . $e->getMessage());
+                    $this->logError("AWS Exception during email sending for batch ID: {$val['id']}. Error: " . $e->getMessage());
                     $MailPool->updateMailStatus($val['id'], 'failure', 'AWS-ERROR');
                     continue;
                 } catch (\Exception $e) {
-                    \Log::error("General Exception during email sending for batch ID: {$val['id']}. Error: " . $e->getMessage());
+                    $this->logError("General Exception during email sending for batch ID: {$val['id']}. Error: " . $e->getMessage());
                     $MailPool->updateMailStatus($val['id'], 'failure', 'GEN-ERROR');
                     continue;
                 }
@@ -130,12 +130,29 @@ class SendBatch
                 }
             }
         } catch (\Exception $e) {
-            \Log::error("Unexpected Exception in email sending process: " . $e->getMessage());
+            $this->logError("Unexpected Exception in email sending process: " . $e->getMessage());
             return false;
         }
 
         echo 'Send email process completed.';
         return true;
+    }
+
+    /**
+     * Log error messages dynamically based on the framework.
+     *
+     * @param string $message The error message to log.
+     * @return void
+     */
+    private function logError(string $message): void
+    {
+        if (function_exists('app')) {
+            // Assume it's a Laravel project
+            \Log::error($message);
+        } else {
+            // Fallback to native PHP error log
+            error_log($message);
+        }
     }
 
     /**
