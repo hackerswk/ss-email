@@ -102,7 +102,7 @@ class SendBatch
                         return $this->filterEmail($email) && !$MailBlock->getBlockEmail($email);
                     }));
                 } else {
-                    $SendMail->setBcc([]);
+                    $SendMail->setBcc(null);
                 }
 
                 $SendMail->setSubject($val['subject']);
