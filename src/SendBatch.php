@@ -148,9 +148,11 @@ class SendBatch
     {
         if (function_exists('app')) {
             // Assume it's a Laravel project
+            echo $message . PHP_EOL;
             \Log::error($message);
         } else {
             // Fallback to native PHP error log
+            echo $message . PHP_EOL;
             error_log($message);
         }
     }
