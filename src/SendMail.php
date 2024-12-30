@@ -138,9 +138,11 @@ class SendMail
      */
     public function setBcc(array $bcc)
     {
+        /*
         if (empty($bcc)) {
-            throw new Exception("email bcc is empty!");
+        throw new Exception("email bcc is empty!");
         }
+         */
         $this->bcc = $bcc;
     }
 
